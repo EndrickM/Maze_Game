@@ -19,6 +19,7 @@ public class ExitTrigger : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
+            Debug.Log("Jogador chegou na saída!");
             SceneManager.LoadScene("DeathScene");
         }
     }

@@ -11,8 +11,11 @@ public class MazeGeneratorTilemap : MonoBehaviour
     public Tilemap wallTilemap;
     public TileBase floorTile;
     public TileBase wallTile;
+    public GameObject Exit;
+    public GameObject playerInicial;
 
     private bool[,] visited;
+    private List<Vector3Int> floorPositions = new List<Vector3Int>(); 
 
     private Vector2Int[] directions = new Vector2Int[]
     {
@@ -38,6 +41,7 @@ public class MazeGeneratorTilemap : MonoBehaviour
 
         CarveMaze(1, 1, maze);
         DrawMaze(maze);
+        PlacePlayerAndExit(); 
     }
 
     void CarveMaze(int x, int y, bool[,] maze)
@@ -65,6 +69,7 @@ public class MazeGeneratorTilemap : MonoBehaviour
     {
         floorTilemap.ClearAllTiles();
         wallTilemap.ClearAllTiles();
+        floorPositions.Clear(); 
 
         for (int x = 0; x < maze.GetLength(0); x++)
         {
@@ -76,10 +81,16 @@ public class MazeGeneratorTilemap : MonoBehaviour
                 Tilemap targetTilemap = maze[x, y] ? floorTilemap : wallTilemap;
                 TileBase tileToSet = maze[x, y] ? floorTile : wallTile;
 
-                targetTilemap.SetTile(new Vector3Int(px,     py,     0), tileToSet);
-                targetTilemap.SetTile(new Vector3Int(px + 1, py,     0), tileToSet);
-                targetTilemap.SetTile(new Vector3Int(px,     py + 1, 0), tileToSet);
+                Vector3Int tilePos = new Vector3Int(px, py, 0);
+                targetTilemap.SetTile(tilePos, tileToSet);
+                targetTilemap.SetTile(new Vector3Int(px + 1, py, 0), tileToSet);
+                targetTilemap.SetTile(new Vector3Int(px, py + 1, 0), tileToSet);
                 targetTilemap.SetTile(new Vector3Int(px + 1, py + 1, 0), tileToSet);
+
+                if (maze[x, y])
+                {
+                    floorPositions.Add(tilePos); 
+                }
             }
         }
     }
@@ -92,4 +103,43 @@ public class MazeGeneratorTilemap : MonoBehaviour
             (list[i], list[rand]) = (list[rand], list[i]);
         }
     }
+
+private GameObject currentPlayer;
+private GameObject currentExit;
+
+void PlacePlayerAndExit()
+{
+    if (floorPositions.Count < 2) return;
+
+    Vector3Int start = floorPositions[0];
+    Vector3Int farthest = start;
+    float maxDist = 0f;
+
+    foreach (var pos in floorPositions)
+    {
+        float dist = Vector3Int.Distance(start, pos);
+        if (dist > maxDist)
+        {
+            maxDist = dist;
+            farthest = pos;
+        }
+    }
+
+    Vector3 startWorld = floorTilemap.CellToWorld(start) + new Vector3(0.5f, 0.5f, 0);
+    Vector3 exitWorld = floorTilemap.CellToWorld(farthest) + new Vector3(0.5f, 0.5f, 0);
+    currentPlayer = Instantiate(playerInicial, startWorld, Quaternion.identity);
+    currentPlayer.tag = "Player";
+    currentExit = Instantiate(Exit, exitWorld, Quaternion.identity);
+    currentExit.tag = "Exit";
+
+    if (currentPlayer != null)
+        Destroy(currentPlayer);
+
+    //if (currentExit != null)
+    //    Destroy(currentExit);
+
+    Debug.Log("Saída criada em: " + exitWorld);
+}
+
+
 }
