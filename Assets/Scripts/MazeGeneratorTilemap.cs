@@ -4,8 +4,8 @@ using System.Collections.Generic;
 
 public class MazeGeneratorTilemap : MonoBehaviour
 {
-    public int width = 10;
-    public int height = 10;
+    public int width = 16;
+    public int height = 16;
 
     public Tilemap floorTilemap;
     public Tilemap wallTilemap;
