@@ -19,4 +19,10 @@ public class GameManagerMenu : MonoBehaviour
     {
         SceneManager.LoadScene("Scene_MazeGeneration");   
     }
+
+    public void ExitGame()
+    {
+        Application.Quit();
+    }
+
 }
