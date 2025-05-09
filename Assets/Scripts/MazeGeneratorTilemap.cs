@@ -104,8 +104,7 @@ public class MazeGeneratorTilemap : MonoBehaviour
         }
     }
 
-private GameObject currentPlayer;
-private GameObject currentExit;
+
 
 void PlacePlayerAndExit()
 {
@@ -127,18 +126,19 @@ void PlacePlayerAndExit()
 
     Vector3 startWorld = floorTilemap.CellToWorld(start) + new Vector3(0.5f, 0.5f, 0);
     Vector3 exitWorld = floorTilemap.CellToWorld(farthest) + new Vector3(0.5f, 0.5f, 0);
-    currentPlayer = Instantiate(playerInicial, startWorld, Quaternion.identity);
-    currentPlayer.tag = "Player";
-    currentExit = Instantiate(Exit, exitWorld, Quaternion.identity);
-    currentExit.tag = "Exit";
 
-    if (currentPlayer != null)
-        Destroy(currentPlayer);
+    if (playerInicial != null)
+    {
+        playerInicial.transform.position = startWorld;
+        playerInicial.tag = "Player"; 
+    }
 
-    //if (currentExit != null)
-    //    Destroy(currentExit);
+    if (Exit != null)
+    {
+        Exit.transform.position = exitWorld;
+        Exit.tag = "Exit"; 
+    }
 
-    Debug.Log("Saída criada em: " + exitWorld);
 }
 
 
